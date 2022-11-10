@@ -1,0 +1,9 @@
+.places__like-sum {
+    color: black;
+    margin: 3px 0px 0px;
+    text-align: center;
+    padding-right: 6px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 16px;
+}

@@ -1,0 +1,42 @@
+.page__image-container {
+    margin-right: 30px;
+    border-radius: 50%;
+}
+
+.page__image-container::after {
+    content: "";
+    background-image: url(../../../images//pen.svg);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    top: 0px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 22px;
+}
+
+.page__image-container::before {
+    content: "";
+    background-color: black;
+    opacity: 0.6;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    top: 0px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 22px;
+}
+
+.page__image-container:hover::after {
+    z-index: 3;
+    cursor: pointer;
+}
+
+.page__image-container:hover::before {
+    z-index: 2;
+}

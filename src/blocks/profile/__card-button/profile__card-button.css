@@ -1,0 +1,32 @@
+.profile__card-button {
+    width: 150px;
+    height: 50px;
+    margin-left: auto;
+    background-color: black;
+    border: 2px solid #FFFFFF;
+    border-radius: 2px;
+    background-image: url(../../../images/card_add.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 22px;
+}
+
+.profile__card-button:hover {
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+@media screen and (max-width:900px) {
+    .profile__card-button {
+        margin-left: 10px;
+    }
+}
+
+@media screen and (max-width:598px) {
+    .profile__card-button {
+        width: 282px;
+        margin-left: 0px;
+        background-size: 16px;
+        margin-top: 32px;
+    }
+}
