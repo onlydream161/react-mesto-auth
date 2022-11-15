@@ -9,6 +9,12 @@ import PopupAddCard from "./PopupAddCard";
 import ImagePopup from "./ImagePopup";
 import { api } from "../utils/Api.js";
 import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
+import { Route, Routes, useNavigate } from "react-router-dom";
+import Register from "./Register";
+import Login from "./Login";
+import ProtectedRoute from "./ProtectedRoute";
+import { authApi } from "../utils/Auth";
+import InformationPopup from "./InformationPopup";
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
     React.useState(false);
@@ -19,6 +25,32 @@ function App() {
   const [selectedCard, setSelectedCard] = React.useState({});
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
+  const [loggedIn, setLoggedIn] = React.useState(false);
+  const [isInfo, setIsInfo] = React.useState(false);
+  const [emailUser, setEmailUser] = React.useState("");
+  const [isInformPopup, setIsInformPopup] = React.useState(false);
+  const navigate = useNavigate();
+  const checkToken = () => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      authApi
+        .getToken(token)
+        .then((res) => {
+          setEmailUser(res.data.email);
+          setLoggedIn(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      navigate("/sign-in");
+    }
+  };
+  useEffect(() => {
+    checkToken();
+    navigate("/");
+  }, [loggedIn]);
+
   useEffect(() => {
     Promise.all([api.getUserInfo(), api.getCard()])
       .then(([userData, cardList]) => {
@@ -84,12 +116,14 @@ function App() {
   function handleAddCard() {
     setIsAddPlacePopupOpen(true);
   }
+
   function closeAllpopups() {
     setIsEditAvatarPopupOpen(false);
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setSelectedCard({});
     setImagePopupOpen(false);
+    setIsInformPopup(false);
   }
   function handleUpdateUser(data) {
     api
@@ -113,20 +147,82 @@ function App() {
         console.log(err);
       });
   }
+  function handleRegisterSubmit(evt, { email, password }) {
+    evt.preventDefault();
+    authApi
+      .signUp({ email, password })
+      .then((res) => {
+        if (res) {
+          setIsInformPopup(true);
+          setIsInfo(true);
+          navigate("/sign-in");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  function handleAuthSubmit(evt, { email, password }) {
+    evt.preventDefault();
+    authApi
+      .signIn({ email, password })
+      .then((res) => {
+        if (res.token) {
+          localStorage.setItem("jwt", res.token);
+          setLoggedIn(true);
+        } else {
+          setLoggedIn(false);
+          setIsInfo(false);
+          setIsInformPopup(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  function handleAuthOut() {
+    setLoggedIn(false);
+    localStorage.removeItem("jwt");
+    setEmailUser(null);
+  }
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="App">
         <div className="page">
-          <Header />
-          <Main
-            onEditAvatar={handleEditAvatarClick}
-            onEditProfile={handleEditProfile}
-            onAddPlace={handleAddCard}
-            handleCardClick={handleCardClick}
-            cards={cards}
-            onCardLike={handleCardLike}
-            onCardDelete={handleCardDelete}
+          <Header
+            loggedIn={loggedIn}
+            onClick={handleAuthOut}
+            emailUser={emailUser}
           />
+          <Routes>
+            <Route
+              exact
+              path="/"
+              element={
+                <ProtectedRoute loggedIn={loggedIn}>
+                  <Main
+                    onEditAvatar={handleEditAvatarClick}
+                    onEditProfile={handleEditProfile}
+                    onAddPlace={handleAddCard}
+                    handleCardClick={handleCardClick}
+                    cards={cards}
+                    onCardLike={handleCardLike}
+                    onCardDelete={handleCardDelete}
+                  />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              exact
+              path="/sign-up"
+              element={<Register onSubmit={handleRegisterSubmit} />}
+            />
+            <Route
+              exact
+              path="/sign-in"
+              element={<Login onSubmit={handleAuthSubmit} />}
+            />
+          </Routes>
           <Footer />
           <PopupAvatar
             isOpen={isEditAvatarPopupOpen}
@@ -147,6 +243,11 @@ function App() {
             isOpen={isImagePopupOpen}
             onClose={closeAllpopups}
             card={selectedCard}
+          />
+          <InformationPopup
+            isOpen={isInformPopup}
+            isInfo={isInfo}
+            onClose={closeAllpopups}
           />
         </div>
       </div>

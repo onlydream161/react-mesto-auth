@@ -13,8 +13,7 @@ function Card({ card, onCardClick, onCardLike, onCardDelete }) {
   const cardLikeButtonClassName = `places__like-button ${
     isLiked ? "places__like-button_active" : ""
   }`;
-  function handleLikeClick() {
-    onCardLike(card);
+  function handleLikeClick() { onCardLike(card);
   }
   function handleDeleteCardClick() {
     onCardDelete(card);

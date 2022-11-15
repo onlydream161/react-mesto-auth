@@ -1,4 +1,7 @@
 .page__header {
     width: 100%;
     margin: 0 auto 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
