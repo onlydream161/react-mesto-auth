@@ -54,13 +54,15 @@ function App() {
   useEffect(() => {
     Promise.all([api.getUserInfo(), api.getCard()])
       .then(([userData, cardList]) => {
-        setCurrentUser(userData);
-        setCards(cardList);
+        if (loggedIn) {
+          setCurrentUser(userData);
+          setCards(cardList);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [loggedIn]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
@@ -160,6 +162,8 @@ function App() {
       })
       .catch((err) => {
         console.log(err);
+        setIsInformPopup(true);
+        setIsInfo(false);
       });
   }
   function handleAuthSubmit(evt, { email, password }) {
@@ -172,11 +176,11 @@ function App() {
           setLoggedIn(true);
         } else {
           setLoggedIn(false);
-          setIsInfo(false);
-          setIsInformPopup(true);
         }
       })
       .catch((err) => {
+        setIsInfo(false);
+        setIsInformPopup(true);
         console.log(err);
       });
   }
