@@ -52,16 +52,16 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getCard()])
-      .then(([userData, cardList]) => {
-        if (loggedIn) {
+    if (loggedIn) {
+      Promise.all([api.getUserInfo(), api.getCard()])
+        .then(([userData, cardList]) => {
           setCurrentUser(userData);
           setCards(cardList);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }, [loggedIn]);
 
   function handleCardLike(card) {
